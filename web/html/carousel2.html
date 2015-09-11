@@ -28,16 +28,25 @@
     div.rn-carousel-indicator span.active {
       color: red;
     }
+
+    .selected { color: orange; font-weight: bold; }
   </style>
 </head>
 <body ng-controller="testCtrl">
 
-<ul rn-carousel rn-carousel-buffered rn-carousel-index="cIndex">
+<ul rn-carousel rn-carousel-buffered rn-carousel-default-index="{{idx}}" rn-carousel-index="cIndex">
   <li ng-repeat="item in items">
-    <span>{{ item.label }}</span>
+    <span>{{ item.name }}</span>
   </li>
 </ul>
-{{ cIndex }}
+
+<input type="number" class="tiny" ng-model="selectMenuIndex">
+
+<dt>
+  <dd ng-repeat="menu in menuList" ng-class="{selected: $index==selectMenuIndex}">
+    <span ng-click="toggleMenu($index)">{{menu.label}}</span>
+  </dd>
+</dt>
 </body>
 
 <script>
@@ -49,20 +58,33 @@
         var obj = {name: 'carousel test'},
           array = [],
           temp;
-        //$scope.index = 5;
+
+        $scope.index = 5;
         var changeAt = function () {
           console.log('change');
           $scope.cIndex = 5;
         };
         //$timeout(changeAt, 500, true);
-        var rPrimise = $http.get('data2.json');
+        var rPrimise = $http.get('http://m.shopping.nate.com/mobile/trend/theme.json?cid=14');
         rPrimise
           .then(function (res) {
             console.log(res.data);
-            $scope.items = res.data;
+            $scope.items = res.data.theme;
             $scope.cIndex = 5;
-
+            $scope.idx = 5;
           });
+
+        rPrimise = $http.get('data2.json');
+        rPrimise
+          .then(function (res) {
+            console.log(res.data);
+            $scope.menuList = res.data;
+            $scope.selectMenuIndex = 5;
+          });
+
+        $scope.toggleMenu = function(idx) {
+          $scope.selectMenuIndex = idx;
+        };
       }]
     );
   })();
